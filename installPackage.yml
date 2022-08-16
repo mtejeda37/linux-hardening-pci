@@ -1,0 +1,10 @@
+---
+- hosts: node01
+  remote_user: root
+  become: yes
+  tasks:
+    - name: install latest version of bind-utils tool
+      yum:
+        name: bind-utils
+        state: latest
+...

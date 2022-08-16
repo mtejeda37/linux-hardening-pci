@@ -1,0 +1,10 @@
+---
+- hosts: node01
+  remote_user: root
+  become: yes
+  tasks:
+    - name: running a python script on remote server
+      script: /backup/test.py
+      args:
+        executable: python3
+...

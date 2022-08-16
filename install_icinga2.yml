@@ -1,0 +1,104 @@
+---
+- hosts: localhost
+  remote_user: root
+  become: yes
+  tasks:
+          - name: adding new repos.
+            dnf:
+                    name:
+                    - https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+                    - https://packages.icinga.com/epel/icinga-rpm-release-8-latest.noarch.rpm
+                    state: present
+                    validate_certs: no
+          - name: importing icinga key
+            shell: rpm --import https://packages.icinga.com/icinga.key
+          - name: installing icinga2 required packages.
+            dnf:
+              name:
+              - icinga2
+              - icinga2-ido-mysql
+              - mariadb
+              - mariadb-server
+              state: present
+          - name: start icinga2 service.
+            systemd:
+                  name: icinga2
+                  state: started
+                  enabled: yes
+          - name: start mariadb service.
+            systemd:
+                  name: mariadb
+                  state: started
+                  enabled: yes
+          - name: disable firewalld
+            systemd:
+                  name: firewalld
+                  state: stopped
+                  enabled: no
+          - name: disable selinux
+            selinux:
+                  state: disabled
+          - name: creating database, user and password for icinga2
+            shell: | 
+                    mysql -u root <<EOF
+                    CREATE DATABASE icinga2;
+                    grant all privileges on icinga2.* to icinga2@localhost identified by 'Prueba01';
+                    FLUSH PRIVILEGES;
+                    quit
+                    EOF
+            ignore_errors: true
+          - name: importing mySql file.
+            shell: mysql -u root icinga2 < /usr/share/icinga2-ido-mysql/schema/mysql.sql
+            ignore_errors: true
+          - name: configuring some other stuffs.
+            shell: icinga2 feature enable ido-mysql && icinga2 feature enable command
+          - name: replacing some lines to finish it...
+            lineinfile:
+                    path: /etc/icinga2/features-enabled/ido-mysql.conf
+                    regexp: '{{item.From}}'
+                    line: '{{item.To}}'
+                    state: present
+            with_items:
+                    - {From: '^user =', To: 'user = "icinga2"'}
+                    - {From: '^password =', To: 'password = "Prueba01"'}
+                    - {From: '^host =', To: 'host = "localhost"'}
+                    - {From: '^database =', To: 'database = "icinga2"'}
+          - name: restarting icinga2 service
+            systemd:
+                    name: icinga2
+                    state: restarted
+          - name: installing some more packages for Icinga Web Interface
+            dnf:
+                    name:
+                    - php 
+                    - php-json 
+                    - php-xml 
+                    - php-intl 
+                    - php-common 
+                    - php-pdo 
+                    - php-mysqlnd 
+                    - php-cli 
+                    - php-mbstring 
+                    - php-fpm 
+                    - php-gd 
+                    - php-zip
+                    - php-ldap
+                    - icingaweb2 
+                    - icingacli 
+                    - httpd
+                    state: present
+          - name: start icinga2 webservices
+            systemd:
+                     name: httpd
+                     state: started
+                     enabled: yes
+          - name: start PHP frontend service
+            systemd:
+                     name: php-fpm
+                     state: started
+                     enabled: yes
+          - name: generate security token
+            shell: icingacli setup token create
+            register: got_error
+            ignore_errors: yes           
+...

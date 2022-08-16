@@ -1,0 +1,47 @@
+---
+- hosts: node01
+  remote_user: root
+  become: yes
+  tasks:
+    - name: disabling firewalld
+      systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
+    - name: disabling and editing selinux config
+      lineinfile:
+        path: /etc/selinux/config
+        regexp: '^SELINUX='
+        line: 'SELINUX=disabled'
+        state: present
+    - name: install needed packages for Gitlab
+      yum:
+        name:
+          - curl
+          - policycoreutils-python
+          - openssh-server
+          - postfix
+        state: latest
+    - name: setting up postfix service
+      systemd:
+        name: postfix
+        state: started
+        enabled: yes
+    - name: getting ready Gitlab repos
+      shell: curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash
+      args:
+        executable: /usr/bin/bash
+        chdir: /backup
+    - name: installing Gitlab packages from new repo list
+      yum:
+        name: gitlab-ce
+        state: present
+    - name: editing config file from Gitlab
+      lineinfile:
+        path: /etc/gitlab/gitlab.rb 
+        regexp: '^external_url'
+        line: ' external_url "http://192.168.50.100" '
+        state: present
+    - name: reconfiguring Gitlab service
+      shell: gitlab-ctl reconfigure
+...

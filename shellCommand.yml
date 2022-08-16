@@ -1,0 +1,10 @@
+---
+- hosts: node01
+  remote_user: root
+  become: yes
+  tasks:
+    - name: execute a simple shell command ( using bash )
+      shell: poweroff
+      args:
+        executable: /usr/bin/bash
+...

@@ -1,0 +1,21 @@
+---
+- hosts: node01
+  remote_user: root
+  become: yes
+  tasks:
+    - name: see if net-snmp package is installed
+      yum:
+        name: net-snmp
+        state: latest
+    - name: editing some lines
+      lineinfile:
+        path: /etc/snmp/snmpd.conf
+        regexp: '^#com2sec'
+        line: 'com2sec notConfigUser  default       public'
+        state: present
+    - name: restarting service 
+      service:
+        name: snmpd
+        state: restarted
+
+...
