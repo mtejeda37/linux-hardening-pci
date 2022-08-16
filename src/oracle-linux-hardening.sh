@@ -212,83 +212,6 @@ yum update --security -y
 	fi
 
 
-### Ensure chargen services are not enabled ##
-systemctl list-unit-files | grep chargen| grep enabled
-	if [ $? -eq 0 ]
-		then
-			systemctl disable chargen; echo "2.1.1 Ensure chargen services are not enabled OK" >>~/hardening.log
-		else
-			echo "2.1.1 Ensure chargen services are not enabled OK">>~/hardening.log
-	fi
-
-### Ensure daytime services are not enabled ##
-systemctl list-unit-files | grep daytime| grep enabled
-	if [ $? -eq 0 ]
-		then
-			systemctl disable daytime; echo "2.1.2 Ensure daytime services are not enabled OK" >>~/hardening.log
-		else
-			echo "2.1.2 Ensure daytime services are not enabled OK">>~/hardening.log
-	fi
-
-### Ensure discard services are not enabled ##
-systemctl list-unit-files | grep discard| grep enabled
-	if [ $? -eq 0 ]
-		then
-			systemctl disable discard; echo "2.1.3 Ensure discard services are not enabled OK" >>~/hardening.log
-		else
-			echo "2.1.3 Ensure discard services are not enabled OK">>~/hardening.log
-	fi
-
-
-### Ensure echo services are not enabled ##
-systemctl list-unit-files | grep echo| grep enabled
-	if [ $? -eq 0 ]
-		then
-			systemctl disable echo; echo "2.1.4 Ensure echo services are not enabled OK" >>~/hardening.log
-		else
-			echo "2.1.4 Ensure echo services are not enabled OK">>~/hardening.log
-	fi
-
-
-##  Ensure time services are not enabled ##
-systemctl list-unit-files | grep time| grep enabled
-	if [ $? -eq 0 ]
-		then
-			systemctl disable time; 
-			echo "2.1.5 Ensure time services are not enabled OK">> ~/hardening.log
-		else
-			echo "2.1.5 Ensure time services are not enabled OK">> ~/hardening.log
-	fi
-
-
-### Ensure tftp services are not enabled ##
-systemctl list-unit-files | grep tftp| grep enabled
-	if [ $? -eq 0 ]
-		then
-			systemctl disable tftp; echo "2.1.6 Ensure tftp server is not enabled OK" >>~/hardening.log
-		else
-			echo "2.1.6 Ensure tftp server is not enabled OK">>~/hardening.log
-	fi
-	
-	
-### Ensure xinetd services are not enabled ##
-systemctl list-unit-files | grep xinetd| grep enabled
-	if [ $? -eq 0 ]
-		then
-			systemctl disable xinetd; echo "2.1.7 Ensure xinetd is not enabled OK" >>~/hardening.log
-		else
-			echo "2.1.7 Ensure xinetd is not enabled OK">>~/hardening.log
-	fi
-
-
-### Ensure time synchronization is in use ####
-rpm -q chrony
-if [ $? -eq 0 ]
-	then
-		echo "2.2.1.1 Ensure time synchronization is in use OK" >>~/hardening.log
-	fi
-	
-	
 ### NTP SERVICE ###
 
 ### restrict ipv4 enable option - NESSUS FIX REQUIREMENT ###
@@ -350,24 +273,6 @@ echo "2.2.1.3 Ensure chrony is configured NO APLICA" >>~/hardening.log
 
 echo "2.2.2 Ensure X Window System is not installed NO APLICA" >>~/hardening.log
 
-
-#### disable HTTP Proxy service ###
-
-systemctl list-unit-files | grep squid | grep enabled
-	if [ $? -eq 0 ]
-		then
-			systemctl disable squid; echo "2.2.13 Ensure HTTP Proxy Server is not enabled OK" >>~/hardening.log
-		else
-			echo "2.2.13 Ensure HTTP Proxy Server is not enabled OK">>~/hardening.log
-	fi
-
-
-echo "2.2.14 Ensure SNMP Server is not enabled OK">>~/hardening.log
-
-
-## Disabling IP forwarding ###
-echo 0 > /proc/sys/net/ipv4/ip_forward
-echo "3.1.1 Ensure IP forwarding is disabled OK" >>~/hardening.log
 
 
 ## disabling packet redirection ###
