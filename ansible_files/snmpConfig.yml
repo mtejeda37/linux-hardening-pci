@@ -7,7 +7,7 @@
         name: net-snmp
         state: latest
     - name: editing some lines
-      shell: sed -i 's/^com2/#com2/g /etc/snmp/snmpd.conf'
+      shell: sed -i 's/com2sec/#com2sec/g' /etc/snmp/snmpd.conf
     - name: restarting service
       service:
         name: snmpd
