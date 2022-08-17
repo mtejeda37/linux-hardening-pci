@@ -1,5 +1,5 @@
 ---
-- hosts: node01
+- hosts: all
   become: yes
   tasks:
     - name: see if net-snmp package is installed
