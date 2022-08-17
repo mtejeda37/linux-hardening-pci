@@ -1,6 +1,5 @@
 ---
 - hosts: node01
-  remote_user: root
   become: yes
   tasks:
     - name: see if net-snmp package is installed
@@ -8,12 +7,8 @@
         name: net-snmp
         state: latest
     - name: editing some lines
-      lineinfile:
-        path: /etc/snmp/snmpd.conf
-        regexp: '^#com2sec'
-        line: 'com2sec notConfigUser  default       public'
-        state: present
-    - name: restarting service 
+      shell: sed -i 's/^com2/#com2/g /etc/snmp/snmpd.conf'
+    - name: restarting service
       service:
         name: snmpd
         state: restarted
