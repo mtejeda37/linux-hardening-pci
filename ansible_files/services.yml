@@ -1,18 +1,14 @@
 ---
-- hosts: node01
-  remote_user: root
+- hosts: all
   become: yes
   tasks:
     - name: check if apache http service is installed or latest
       yum:
-        name: httpd
+        name: nginx
         state: latest
     - name: ensure http service is running
       service:
-        name: httpd
+        name: nginx
         state: started
-    - name: enable http service on boot
-      systemd:
-        name: httpd
         enabled: yes
 ...
