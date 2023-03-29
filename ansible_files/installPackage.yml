@@ -1,10 +1,10 @@
 ---
-- hosts: node01
+- hosts: psql
   remote_user: root
   become: yes
   tasks:
-    - name: install latest version of bind-utils tool
+    - name: install latest version of all
       yum:
-        name: bind-utils
+        name: '*'
         state: latest
 ...
